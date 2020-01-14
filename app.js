@@ -20,41 +20,10 @@ if('geolocation' in navigator){
     navigator.geolocation.getCurrentPosition(setPosition,showError);
 }else{
     notificationElement.style.display = "block";
-    notificationElement.innerHTML = "<p>Browser doesn't Support Geolocation.</p>"
+    notificationElement.innerHTML = "<p>Browser doesn't Support Geolocation.</p>";
 }
 
-
-displayWeather(){
-iconElement.innerHTML = `<img src="icons/${weather.iconId}.png"/>`
-tempElement.innerHTML = `${weather.temperature.value}°<span>C</span>`;
-decsElement.innerHTML = weather.description;
-locationElement.innerHTML = `${weather.city},${weather.country}`;
-}
-
-function celTofah(temperature){
-    return (temperature * 9/5)+32;
-}
-
-
-tempElement.addEventListener("click",function(){
-    if(weather.temperature.value === undefined) return;
-    if(weather.temperature.unit === "celsius"){
-        let fahrenheit = celTofah(weather.temperature.value);
-        fahrenheit = Math.floor(fahrenheit);
-        weather.temperature.unit = "fahrenheit";
-    }else{
-        tempElement.innerHTML = `${weather.temperature.value}° <span>C</span>`;
-        weather.temp1erature.unit = "celsius";
-    }
-});
-
-if("geolocation" in navigator){
-    navigator.geolocation.getCurrentPosition(setPosition,showError); /***** */
-}else{
-    notificationElement.style.display = "block";
-    notificationElement.innerHTML = "<p>Browser doesn't Support Geolocation.</p>"
-}
-
+//SET USER'S LOCATION
 function setPosition(position){
     let latitude = position.coords.latitude;
     let longitude = position.coords.longitude;
@@ -66,9 +35,74 @@ function showError(error){
     notificationElement.innerHTML = `<p>${error.message}</p>`;
 }  
 
-
+//Get Weather from API Provider
 function getWeather(latitude,longitude){
-    let api =`http://api.openweathermap.org/data/2.5/weather?lat=${latitude}&lon=${longitude}&appid=8c5be3ba9e1e4c634d31a3a395e195ee&units=metric`}
+    let api =`http://api.openweathermap.org/data/2.5/weather?lat=${latitude}&lon=${longitude}&appid=8c5be3ba9e1e4c634d31a3a395e195ee&units=metric`;
+    
+    fetch(api).then(function(response){
+        let data = response.json();
+        return data;
+    })
+    .then(function(data){
+        weather.temperature.value = data.main.temp;
+        weather.description = data.weather[0].description;
+        weather.iconId = data.weather[0].icon;
+        weather.city = data.name;
+        weather.country = data.sys.country;
+    })
+    .then(function(){
+        displayWeather();
+    });
+}
+//DISPLAY WEATHER
+function displayWeather(){
+    iconElement.innerHTML = `<img src="icons/${weather.iconId}.png"/>`
+    tempElement.innerHTML = `${weather.temperature.value}°<span>C</span>`;
+    decsElement.innerHTML = weather.description;
+    locationElement.innerHTML = `${weather.city},${weather.country}`;
+    }
+
+function celTofah(temperature){
+        return (temperature * 9/5)+32;
+    }
+    
+
+tempElement.addEventListener("click",function(){
+        if(weather.temperature.value === undefined) return;
+        if(weather.temperature.unit === "celsius"){
+            let fahrenheit = celTofah(weather.temperature.value);
+            fahrenheit = Math.floor(fahrenheit);
+            weather.temperature.unit = "fahrenheit";
+        }else{
+            tempElement.innerHTML = `${weather.temperature.value}° <span>C</span>`;
+            weather.temperature.unit = "celsius";
+        }
+});
+
+
+
+/*
+
+displayWeather(){
+iconElement.innerHTML = `<img src="icons/${weather.iconId}.png"/>`
+tempElement.innerHTML = `${weather.temperature.value}°<span>C</span>`;
+decsElement.innerHTML = weather.description;
+locationElement.innerHTML = `${weather.city},${weather.country}`;
+}
+
+
+
+
+if("geolocation" in navigator){
+    navigator.geolocation.getCurrentPosition(setPosition,showError); 
+}else{
+    notificationElement.style.display = "block";
+    notificationElement.innerHTML = "<p>Browser doesn't Support Geolocation.</p>"
+}
+
+
+
+
 
 
 
@@ -80,7 +114,7 @@ function getWeather(latitude,longitude){
     weather.city = data.name;
     weather.country = data.sys.country;
 })
-
+*/
 
 
 
